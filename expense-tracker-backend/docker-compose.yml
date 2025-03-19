@@ -1,20 +1,11 @@
 #version: '3.8' # it's not necessary to add anymore.
 
 services:
-  db:
-    image: postgres:17 # postgres version
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=${Database_name} # database name
-      - POSTGRES_USER=${Database_user}  # username
-      - POSTGRES_PASSWORD=${Database_pass} # database password
-    ports:
-      - "5432:5432"
 
   web:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/code
     ports:
@@ -22,14 +13,22 @@ services:
     env_file:
       - .env
     environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - POSTGRES_USER=${Database_user}  # username
-      - POSTGRES_PASSWORD=${Database_pass} # database password
-      - POSTGRES_DB=${Database_name} # database name
-      - POSTGRES_HOST=${Database_host} # hostname will be db for docker and localhost for local project.
-      - POSTGRES_PORT=${Database_port} # port number
+      - POSTGRES_USER=${Database_user} 
+      - POSTGRES_PASSWORD=${Database_pass}
+      - POSTGRES_DB=${Database_name} 
     depends_on:
       - db
 
+  db:
+    image: postgres:17 # postgres version
+    hostname: postgres_db_expense_tracker
+    volumes:
+      - expense-tracker-backend_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${Database_user} 
+      - POSTGRES_PASSWORD=${Database_pass} 
+      - POSTGRES_DB=${Database_name} 
+
 volumes:
-  postgres_data:
+  expense-tracker-backend_db_data:
+    external: true
