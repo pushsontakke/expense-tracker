@@ -18,17 +18,17 @@ services:
       - POSTGRES_DB=${Database_name} 
     depends_on:
       - db
-
   db:
     image: postgres:17 # postgres version
-    hostname: postgres_db_expense_tracker
     volumes:
-      - expense-tracker-backend_db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=${Database_user} 
-      - POSTGRES_PASSWORD=${Database_pass} 
-      - POSTGRES_DB=${Database_name} 
-
+      - POSTGRES_DB=${Database_name} # database name
+      - POSTGRES_USER=${Database_user}  # username
+      - POSTGRES_PASSWORD=${Database_pass} # database password
+    ports:
+      - "5432:5432"
+      
 volumes:
   expense-tracker-backend_db_data:
     external: true
