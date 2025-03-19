@@ -1,17 +1,6 @@
 #version: '3.8' # it's not necessary to add anymore.
 
 services:
-  db:
-    image: postgres:17 # postgres version
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=${Database_name} # database name
-      - POSTGRES_USER=${Database_user}  # username
-      - POSTGRES_PASSWORD=${Database_pass} # database password
-    ports:
-      - "5432:5432"
-
   web:
     build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
@@ -30,6 +19,18 @@ services:
       - POSTGRES_PORT=${Database_port} # port number
     depends_on:
       - db
+  db:
+    image: postgres:17 # postgres version
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${Database_name} # database name
+      - POSTGRES_USER=${Database_user}  # username
+      - POSTGRES_PASSWORD=${Database_pass} # database password
+    ports:
+      - "5432:5432"
+
 
 volumes:
   postgres_data:
+    external: true
